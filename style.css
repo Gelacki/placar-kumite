@@ -1,0 +1,237 @@
+body {
+    margin: 0;
+    background: #000;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden; /* Prevent scrollbars */
+}
+.placar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1px;
+    height: calc(100vh - 70px); /* Adjust height for control bar */
+    overflow: hidden; /* Prevent content overflow */
+}
+.aka, .ao {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 2em;
+    transition: background 0.3s ease;
+    position: relative; /* For blinking overlay */
+}
+.aka {
+    background: #c00000;
+    grid-column: 2;
+}
+.ao {
+    background: #003cb3;
+    grid-column: 1;
+}
+.penalidades {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.pen-btn {
+    border: 2px solid white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    font-size: 0.8em; /* Slightly smaller for penalties */
+    -webkit-user-select: none; /* Prevent text selection for Safari */
+    -webkit-user-select: none; /* Prevent text selection for Safari */
+    -webkit-user-select: none; /* Prevent text selection for Safari */
+    -webkit-user-select: none; /* Prevent text selection for Safari */
+    user-select: none; /* Prevent text selection */
+}
+.pen-btn.active {
+    background: #ff0;
+    color: #000;
+}
+.pen-btn.H.active { /* Specific style for Hansoku */
+    background: #ff0000;
+    color: #ffffff;
+    border-color: #ff0000;
+}
+.controle {
+    grid-column: span 2;
+    background: #222;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 10px; 
+    padding: 10px; 
+    height: 70px; 
+    align-items: center;
+}
+button {
+    padding: 8px 15px; 
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #4d4d4d;
+    color: #fff;
+    transition: background-color 0.2s ease;
+    user-select: none; /* Prevent text selection */
+}
+button:hover {
+    background-color: #686868;
+}
+.atleta-nome, .categoria-texto {
+    font-size: 1.5em; /* Slightly larger text */
+    text-align: center;
+    width: 90%;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.2); /* Slight background for readability */
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer; /* Indicate it's clickable */
+    user-select: none; /* Prevent text selection */
+}
+.pontos-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+}
+.pontos {
+    font-size: 12em; /* Even larger points */
+    margin: 10px 0;
+    font-weight: bold;
+    user-select: none; /* Prevent text selection */
+}
+/* Specific positioning for AO and AKA points */
+#pontosAo {
+    margin-right: auto; /* Push to the left as much as possible */
+    margin-left: 0cm;   /* Then add 3cm margin from left */
+}
+#pontosAka {
+    margin-left: auto;   /* Push to the right as much as possible */
+    margin-right: 0cm;   /* Then add 3cm margin from right */
+}
+
+.senshu-btn {
+    background: none;
+    border: 2px solid #ffffff; /* Visible border when not active */
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+    transition: all 0.2s ease;
+    user-select: none; /* Prevent text selection */
+}
+.senshu-btn.active {
+    background: #ffffff;
+    color: #000;
+    border-color: #ffffff;
+}
+.botoes {
+    display: flex;
+    gap: 10px; /* More space between columns */
+    justify-content: center;
+    margin-bottom: 108px;
+}
+/* REMOVED .coluna-pontos from here */
+.botoes button { /* Apply styles directly to buttons within .botoes */
+    font-size: 1em; /* Larger score buttons */
+    padding: 8px 20px;
+    min-width: 40px; /* Ensure consistent width */
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+.blink {
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; } /* Blinking by changing opacity */
+}
+.cronometro-central {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 90;
+    background: rgba(0, 0, 0, 0); /* Darker overlay */
+    padding: 15px 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+.categoria {
+    font-size: 1.8em; /* Larger category text */
+    margin-bottom: 13px;
+    font-weight: bold;
+    user-select: none; /* Prevent text selection */
+}
+.tempo {
+    font-size: 9em; /* Massive timer font */
+    font-weight: bolder;
+    margin: 15px 0;
+    text-align: center;
+    color: #fff; /* Default color */
+    text-shadow: 0 0 15px #00f, 0 0 25px #00f; /* Blue glow for timer */
+    transition: color 0.3s ease, text-shadow 0.3s ease; /* Smooth color transition */
+    user-select: none; /* Prevent text selection */
+}
+.tempo.warning {
+    color: #ffff00; /* Yellow for warning */
+    text-shadow: 0 0 15px #ffff00, 0 0 25px #ffff00;
+}
+.tempo.final {
+    color: #ff0000; /* Red for final */
+    text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000;
+}
+
+/* Basic responsiveness for smaller screens */
+@media (max-width: 768px) {
+    .placar {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto; /* Two athletes, then control */
+        height: calc(100vh - 140px); /* Adjust height for stacked control bar */
+    }
+    .aka, .ao {
+        font-size: 1.5em;
+        padding: 5px;
+    }
+    .pontos {
+        font-size: 8em;
+    }
+    /* Reset specific positioning for smaller screens */
+    #pontosAo, #pontosAka {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .pontos-container {
+        justify-content: center; /* Center again on small screens */
+    }
+
+    .cronometro-central {
+        padding: 5px 15px;
+    }
+    .tempo {
+        font-size: 5em;
+    }
+    .atleta-nome, .categoria-texto {
+        font-size: 1em;
+    }
+    .controle {
+        flex-direction: column; /* Stack control buttons vertically */
+        gap: 5px;
+        padding: 5px;
+        height: auto; /* Allow height to adjust */
+    }
+    button {
+        width: 90%; /* Make control buttons wider */
+        margin: 0 auto;
+    }
+}

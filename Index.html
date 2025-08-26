@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar WKF</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥋</text></svg>">
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <div class="placar">
+        <div class="ao" id="ao">
+            <span class="atleta-nome" id="nomeAo">AO</span>
+            <div class="penalidades">
+                <div class="pen-btn" id="aoC1" onclick="togglePenalty('ao','C1')">C1</div>
+                <div class="pen-btn" id="aoC2" onclick="togglePenalty('ao','C2')">C2</div>
+                <div class="pen-btn" id="aoC3" onclick="togglePenalty('ao','C3')">C3</div>
+                <div class="pen-btn" id="aoHC" onclick="togglePenalty('ao','HC')">HC</div>
+                <div class="pen-btn H" id="aoH" onclick="togglePenalty('ao','H')">H</div>
+            </div>
+            <div class="pontos-container">
+                <button class="senshu-btn" id="aoSenshu" onclick="toggleSenshu('ao')">SENSHU</button>
+                <div class="pontos" id="pontosAo">0</div>
+            </div>
+            <div class="botoes">
+                <button onclick="addPonto('ao', 1)">Yuko</button>
+                <button onclick="addPonto('ao', 2)">Wazari</button>
+                <button onclick="addPonto('ao', 3)">Ippon</button>
+                <button onclick="addPonto('ao', -1)">-1</button>
+            </div>
+        </div>
+        <div class="aka" id="aka">
+            <span class="atleta-nome" id="nomeAka">AKA</span>
+            <div class="penalidades">
+                <div class="pen-btn" id="akaC1" onclick="togglePenalty('aka','C1')">C1</div>
+                <div class="pen-btn" id="akaC2" onclick="togglePenalty('aka','C2')">C2</div>
+                <div class="pen-btn" id="akaC3" onclick="togglePenalty('aka','C3')">C3</div>
+                <div class="pen-btn" id="akaHC" onclick="togglePenalty('aka','HC')">HC</div>
+                <div class="pen-btn H" id="akaH" onclick="togglePenalty('aka','H')">H</div>
+            </div>
+            <div class="pontos-container">
+                <div class="pontos" id="pontosAka">0</div>
+                <button class="senshu-btn" id="akaSenshu" onclick="toggleSenshu('aka')">SENSHU</button>
+            </div>
+            <div class="botoes">
+                <button onclick="addPonto('aka', 1)">Yuko</button>
+                <button onclick="addPonto('aka', 2)">Wazari</button>
+                <button onclick="addPonto('aka', 3)">Ippon</button>
+                <button onclick="addPonto('aka', -1)">-1</button>
+            </div>
+        </div>
+    </div>
+    <div class="controle">
+        <button onclick="definirTempo()">Tempo</button>
+        <button onclick="startTimer()">Inicio</button>
+        <button onclick="pauseTimer()">Pausa</button>
+        <button onclick="resetAll()">Reset</button>
+        <button onclick="alternarTelaCheia()">Tela Cheia</button>
+    </div>
+    <div class="cronometro-central" id="cronometroCentral">
+        <div class="categoria">CAT: <span class="categoria-texto" id="categoria">Sub-21 -75kg</span></div>
+        <div class="tempo" id="timer">02:00</div>
+    </div>
+    <script src="script.js"></script> </body>
+</html>
