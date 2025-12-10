@@ -11,55 +11,56 @@
     <div class="placar">
         <div class="ao" id="ao">
             <span class="atleta-nome" id="nomeAo">AO</span>
-            <div class="penalidades">
-                <div class="pen-btn" id="aoC1" onclick="togglePenalty('ao','C1')">C1</div>
-                <div class="pen-btn" id="aoC2" onclick="togglePenalty('ao','C2')">C2</div>
-                <div class="pen-btn" id="aoC3" onclick="togglePenalty('ao','C3')">C3</div>
-                <div class="pen-btn" id="aoHC" onclick="togglePenalty('ao','HC')">HC</div>
-                <div class="pen-btn H" id="aoH" onclick="togglePenalty('ao','H')">H</div>
-            </div>
             <div class="pontos-container">
-                <button class="senshu-btn" id="aoSenshu" onclick="toggleSenshu('ao')">SENSHU</button>
+                <button class="senshu-btn" id="aoSenshu" data-action="toggle-senshu" data-atleta="ao">SENSHU</button>
                 <div class="pontos" id="pontosAo">0</div>
             </div>
+            <div class="penalidades">
+                <div class="pen-btn" id="aoC1" data-action="toggle-penalty" data-atleta="ao" data-tipo="C1">C1</div>
+                <div class="pen-btn" id="aoC2" data-action="toggle-penalty" data-atleta="ao" data-tipo="C2">C2</div>
+                <div class="pen-btn" id="aoC3" data-action="toggle-penalty" data-atleta="ao" data-tipo="C3">C3</div>
+                <div class="pen-btn" id="aoHC" data-action="toggle-penalty" data-atleta="ao" data-tipo="HC">HC</div>
+                <div class="pen-btn H" id="aoH" data-action="toggle-penalty" data-atleta="ao" data-tipo="H">H</div>
+            </div>
             <div class="botoes">
-                <button onclick="addPonto('ao', 1)">Yuko</button>
-                <button onclick="addPonto('ao', 2)">Wazari</button>
-                <button onclick="addPonto('ao', 3)">Ippon</button>
-                <button onclick="addPonto('ao', -1)">-1</button>
+                <button data-action="add-ponto" data-atleta="ao" data-valor="1">Yuko</button>
+                <button data-action="add-ponto" data-atleta="ao" data-valor="2">Wazari</button>
+                <button data-action="add-ponto" data-atleta="ao" data-valor="3">Ippon</button>
+                <button data-action="add-ponto" data-atleta="ao" data-valor="-1">-1</button>
             </div>
         </div>
         <div class="aka" id="aka">
             <span class="atleta-nome" id="nomeAka">AKA</span>
-            <div class="penalidades">
-                <div class="pen-btn" id="akaC1" onclick="togglePenalty('aka','C1')">C1</div>
-                <div class="pen-btn" id="akaC2" onclick="togglePenalty('aka','C2')">C2</div>
-                <div class="pen-btn" id="akaC3" onclick="togglePenalty('aka','C3')">C3</div>
-                <div class="pen-btn" id="akaHC" onclick="togglePenalty('aka','HC')">HC</div>
-                <div class="pen-btn H" id="akaH" onclick="togglePenalty('aka','H')">H</div>
-            </div>
             <div class="pontos-container">
                 <div class="pontos" id="pontosAka">0</div>
-                <button class="senshu-btn" id="akaSenshu" onclick="toggleSenshu('aka')">SENSHU</button>
+                <button class="senshu-btn" id="akaSenshu" data-action="toggle-senshu" data-atleta="aka">SENSHU</button>
+            </div>
+            <div class="penalidades">
+                <div class="pen-btn" id="akaC1" data-action="toggle-penalty" data-atleta="aka" data-tipo="C1">C1</div>
+                <div class="pen-btn" id="akaC2" data-action="toggle-penalty" data-atleta="aka" data-tipo="C2">C2</div>
+                <div class="pen-btn" id="akaC3" data-action="toggle-penalty" data-atleta="aka" data-tipo="C3">C3</div>
+                <div class="pen-btn" id="akaHC" data-action="toggle-penalty" data-atleta="aka" data-tipo="HC">HC</div>
+                <div class="pen-btn H" id="akaH" data-action="toggle-penalty" data-atleta="aka" data-tipo="H">H</div>
             </div>
             <div class="botoes">
-                <button onclick="addPonto('aka', 1)">Yuko</button>
-                <button onclick="addPonto('aka', 2)">Wazari</button>
-                <button onclick="addPonto('aka', 3)">Ippon</button>
-                <button onclick="addPonto('aka', -1)">-1</button>
+                <button data-action="add-ponto" data-atleta="aka" data-valor="1">Yuko</button>
+                <button data-action="add-ponto" data-atleta="aka" data-valor="2">Wazari</button>
+                <button data-action="add-ponto" data-atleta="aka" data-valor="3">Ippon</button>
+                <button data-action="add-ponto" data-atleta="aka" data-valor="-1">-1</button>
             </div>
         </div>
     </div>
     <div class="controle">
-        <button onclick="definirTempo()">Tempo</button>
-        <button onclick="startTimer()">Inicio</button>
-        <button onclick="pauseTimer()">Pausa</button>
-        <button onclick="resetAll()">Reset</button>
-        <button onclick="alternarTelaCheia()">Tela Cheia</button>
+        <button data-action="definir-tempo">Tempo</button>
+        <button data-action="start-timer">Inicio</button>
+        <button data-action="pause-timer">Pausa</button>
+        <button data-action="reset-all">Reset</button>
+        <button data-action="toggle-fullscreen">Tela Cheia</button>
     </div>
     <div class="cronometro-central" id="cronometroCentral">
-        <div class="categoria">CAT: <span class="categoria-texto" id="categoria">Sub-21 -75kg</span></div>
-        <div class="tempo" id="timer">02:00</div>
+        <div class="categoria"><span class="categoria-texto" id="categoria">Masculino Sênior -60kg</span></div>
+        <div class="divisao"><span class="divisao-texto" id="divisao">Especial</span></div>
+        <div class="tempo" id="timer">03:00</div>
     </div>
     <script src="script.js"></script> </body>
 </html>

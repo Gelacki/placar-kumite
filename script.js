@@ -1,32 +1,86 @@
+// Variáveis globais
 let timerInterval;
-let duration = 120; // Default 2 minutes (120 seconds)
-let timeLeft = duration;
-let pontos = { aka: 0, ao: 0 };
-let activeSenshu = null; // To track who has Senshu (null, 'aka', or 'ao')
-let matchEnded = false; // Flag to prevent further actions once match is over
+let duration = 180; // Duração padrão da partida em segundos (3 minutos)
+let timeLeft = duration; // Tempo restante na partida
+let pontos = { aka: 0, ao: 0 }; // Objeto para armazenar os pontos de cada atleta (AKA - vermelho, AO - azul)
+let activeSenshu = null; // Rastreia quem tem a vantagem Senshu ('aka', 'ao' ou null)
+let matchEnded = false; // Flag para indicar se a partida terminou, prevenindo ações adicionais
 
-// Initialize display on load
+// Inicializa o display quando o DOM (Document Object Model) é carregado
 document.addEventListener('DOMContentLoaded', () => {
-    updateDisplay();
-    // Add click listeners for editing names and category
-    document.getElementById('nomeAo').addEventListener('click', () => editText('nomeAo', 'Athlete AO Name'));
-    document.getElementById('nomeAka').addEventListener('click', () => editText('nomeAka', 'Athlete AKA Name'));
-    document.getElementById('categoria').addEventListener('click', () => editText('categoria', 'Category Name'));
+    updateDisplay(); // Atualiza o display do timer e placar
+    // Adiciona listeners de clique para permitir a edição dos nomes e da categoria
+    document.getElementById('nomeAo').addEventListener('click', () => editText('nomeAo', 'Nome do Atleta AO'));
+    document.getElementById('nomeAka').addEventListener('click', () => editText('nomeAka', 'Nome do Atleta AKA'));
+    document.getElementById('categoria').addEventListener('click', () => editText('categoria', 'Nome da Categoria'));
+    document.getElementById('divisao').addEventListener('click', () => editText('divisao', 'Nome da Divisão'));
+
+    // Delegação de eventos para os controles principais e placar
+    document.querySelector('.placar').addEventListener('click', handlePlacarClick);
+    document.querySelector('.controle').addEventListener('click', handleControleClick);
 });
 
 /**
- * Capitalizes the first letter of a string.
- * @param {string} str - The input string.
- * @returns {string} The capitalized string.
+ * Gerencia cliques nos botões do placar (pontos, penalidades, senshu) usando delegação de eventos.
+ * @param {Event} e - O objeto do evento de clique.
+ */
+function handlePlacarClick(e) {
+    const target = e.target;
+    const action = target.dataset.action;
+
+    if (!action) return;
+
+    const atleta = target.dataset.atleta;
+
+    switch (action) {
+        case 'add-ponto':
+            const valor = parseInt(target.dataset.valor, 10);
+            addPonto(atleta, valor);
+            break;
+        case 'toggle-penalty':
+            const tipo = target.dataset.tipo;
+            togglePenalty(atleta, tipo);
+            break;
+        case 'toggle-senshu':
+            toggleSenshu(atleta);
+            break;
+    }
+}
+
+/**
+ * Gerencia cliques nos botões de controle (timer, reset, etc.).
+ * @param {Event} e - O objeto do evento de clique.
+ */
+function handleControleClick(e) {
+    const action = e.target.dataset.action;
+    if (!action) return;
+
+    const actions = {
+        'definir-tempo': definirTempo,
+        'start-timer': startTimer,
+        'pause-timer': pauseTimer,
+        'reset-all': resetAll,
+        'toggle-fullscreen': alternarTelaCheia,
+    };
+
+    if (actions[action]) {
+        actions[action]();
+    }
+}
+
+/**
+ * Capitaliza (deixa em maiúscula) a primeira letra de uma string.
+ * @param {string} str - A string de entrada.
+ * @returns {string} A string com a primeira letra maiúscula.
  */
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 /**
- * Allows editing of text content for athlete names and category.
- * @param {string} id - The ID of the HTML element to edit.
- * @param {string} defaultText - The default text to show in the prompt.
+ * Permite a edição do conteúdo de texto para os nomes dos atletas e categoria.
+ * @param {string} id - O ID do elemento HTML a ser editado.
+ * @param {string} defaultText - O texto padrão para mostrar no prompt de edição.
  */
 function editText(id, defaultText) {
     const element = document.getElementById(id);
@@ -34,64 +88,64 @@ function editText(id, defaultText) {
     let newText = prompt(`Enter new text for ${defaultText}:`, currentText);
 
     if (newText !== null) { // User did not cancel
-        element.innerText = newText.trim() === '' ? defaultText : newText.trim();
+        element.innerText = newText.trim() === '' ? defaultText : newText.trim(); // Se o texto for vazio, usa o padrão
     }
 }
 
 /**
- * Toggles the Senshu advantage for an athlete.
- * @param {string} lado - The side ('aka' or 'ao') to toggle Senshu for.
+ * Ativa ou desativa a vantagem Senshu para um atleta.
+ * @param {string} lado - O lado ('aka' ou 'ao') para o qual ativar/desativar o Senshu.
  */
 function toggleSenshu(lado) {
-    if (matchEnded) return;
+    if (matchEnded) return; // Não faz nada se a partida já terminou
 
     const btn = document.getElementById(lado + 'Senshu');
 
     if (activeSenshu === lado) {
-        // If already active, deactivate it
+        // Se o Senshu já estiver ativo para este lado, desativa-o
         btn.classList.remove('active');
         activeSenshu = null;
     } else {
-        // Deactivate any currently active Senshu
+        // Desativa qualquer outro Senshu que esteja ativo
         if (activeSenshu) {
             document.getElementById(activeSenshu + 'Senshu').classList.remove('active');
         }
-        // Activate the new Senshu
+        // Ativa o Senshu para o novo lado
         btn.classList.add('active');
         activeSenshu = lado;
     }
 }
 
 /**
- * Adds or subtracts points for an athlete.
- * Awards Senshu if it's the first point of the match.
- * @param {string} atleta - The athlete's side ('aka' or 'ao').
- * @param {number} valor - The point value to add (e.g., 1, 2, 3) or subtract (-1).
+ * Adiciona ou subtrai pontos para um atleta.
+ * Concede Senshu se for o primeiro ponto da partida.
+ * @param {string} atleta - O lado do atleta ('aka' ou 'ao').
+ * @param {number} valor - O valor do ponto a ser adicionado (ex: 1, 2, 3) ou subtraído (-1).
  */
 function addPonto(atleta, valor) {
-    if (matchEnded) return; // Prevent score changes if match is over
+    if (matchEnded) return; // Impede a alteração do placar se a partida terminou
 
     const oldPoints = pontos[atleta];
-    pontos[atleta] = Math.max(0, pontos[atleta] + valor); // Ensure score doesn't go below 0
+    pontos[atleta] = Math.max(0, pontos[atleta] + valor); // Garante que a pontuação não seja negativa
     document.getElementById(`pontos${capitalize(atleta)}`).innerText = pontos[atleta];
 
-    // Award Senshu if it's the very first point of the match and no Senshu is active
+    // Concede Senshu se for o primeiro ponto da partida e nenhum Senshu estiver ativo
     const totalPoints = pontos.aka + pontos.ao;
     if (totalPoints === valor && valor > 0 && activeSenshu === null) {
         toggleSenshu(atleta);
     }
 
-    verificarVencedor();
+    verificarVencedor(); // Verifica se há um vencedor após a mudança de pontos
 }
 
 /**
- * Toggles a penalty for an athlete.
- * Applies specific logic for Hansoku penalties.
- * @param {string} atleta - The athlete's side ('aka' or 'ao').
- * @param {string} tipo - The type of penalty (e.g., 'C1', 'H').
+ * Ativa ou desativa uma penalidade para um atleta.
+ * Aplica lógica específica para penalidades de Hansoku.
+ * @param {string} atleta - O lado do atleta ('aka' ou 'ao').
+ * @param {string} tipo - O tipo de penalidade (ex: 'C1', 'H').
  */
 function togglePenalty(atleta, tipo) {
-    if (matchEnded && tipo !== "H") return; // Allow Hansoku to be toggled even if match ended by other means
+    if (matchEnded && tipo !== "H") return; // Permite que Hansoku seja alterado mesmo se a partida terminou por outros meios
 
     const el = document.getElementById(`${atleta}${tipo}`);
     el.classList.toggle("active");
@@ -100,24 +154,24 @@ function togglePenalty(atleta, tipo) {
     if (tipo === "H") {
         const outroLado = atleta === "aka" ? "ao" : "aka";
         if (el.classList.contains("active")) {
-            document.getElementById(outroLado).classList.add("blink"); // Opponent blinks
-            document.getElementById(atleta).classList.remove("blink"); // Penalized side stops blinking
-            pauseTimer(); // Pause timer on Hansoku
-            matchEnded = true; // Match ends on Hansoku
+            document.getElementById(outroLado).classList.add("blink"); // Oponente pisca para indicar vitória
+            document.getElementById(atleta).classList.remove("blink"); // O lado penalizado para de piscar
+            pauseTimer(); // Pausa o timer no Hansoku
+            matchEnded = true; // A partida termina com Hansoku
         } else {
-            // If Hansoku is deactivated, remove blink and allow timer to resume (matchEnded might be true from another cause)
+            // Se o Hansoku for desativado, remove o pisca-pisca e permite que o timer continue
             document.getElementById(outroLado).classList.remove("blink");
             document.getElementById(atleta).classList.remove("blink");
-            matchEnded = false; // Match is no longer ended by Hansoku
+            matchEnded = false; // A partida não está mais terminada por Hansoku
         }
     }
-    verificarVencedor(); // Re-check winner status after penalty change
+    verificarVencedor(); // Reavalia o vencedor após a mudança de penalidade
 }
 
 /**
- * Gets the count of active penalties for an athlete.
- * @param {string} atleta - The athlete's side ('aka' or 'ao').
- * @returns {number} The total count of active penalties.
+ * Obtém a contagem de penalidades ativas para um atleta.
+ * @param {string} atleta - O lado do atleta ('aka' ou 'ao').
+ * @returns {number} O número total de penalidades ativas.
  */
 function getPenaltyCount(atleta) {
     let count = 0;
@@ -131,58 +185,58 @@ function getPenaltyCount(atleta) {
 }
 
 /**
- * Checks all win conditions and updates the display accordingly.
- * Win conditions are checked in WKF priority: Hansoku > 8-point difference > Time expiry.
+ * Verifica todas as condições de vitória e atualiza o display.
+ * As condições são verificadas na ordem de prioridade da WKF: Hansoku > Diferença de 8 pontos > Fim do tempo.
  */
 function verificarVencedor() {
-    // Clear any previous blinking
+    // Limpa qualquer efeito de piscar anterior
     document.getElementById("aka").classList.remove("blink");
     document.getElementById("ao").classList.remove("blink");
-    matchEnded = false; // Reset match ended flag
+    matchEnded = false; // Reseta a flag de fim de partida para reavaliação
 
     const akaHansoku = document.getElementById('akaH').classList.contains('active');
     const aoHansoku = document.getElementById('aoH').classList.contains('active');
 
-    // 1. Hansoku (Automatic win for opponent)
+    // 1. Hansoku (Vitória automática para o oponente)
     if (akaHansoku) {
-        document.getElementById("ao").classList.add("blink");
+        document.getElementById("ao").classList.add("blink"); // AO vence
         pauseTimer();
         matchEnded = true;
         return;
     }
     if (aoHansoku) {
-        document.getElementById("aka").classList.add("blink");
+        document.getElementById("aka").classList.add("blink"); // AKA vence
         pauseTimer();
         matchEnded = true;
         return;
     }
 
-    // 2. 8-point difference (Kachi by Saishukai)
+    // 2. Diferença de 8 pontos (Vitória por pontuação)
     const diff = Math.abs(pontos.aka - pontos.ao);
     if (diff >= 8) {
         const vencedor = pontos.aka > pontos.ao ? "aka" : "ao";
-        document.getElementById(vencedor).classList.add("blink");
+        document.getElementById(vencedor).classList.add("blink"); // O atleta com mais pontos vence
         pauseTimer();
         matchEnded = true;
         return;
     }
 
-    // 3. Time expiry
+    // 3. Fim do tempo
     if (timeLeft === 0) {
-        pauseTimer(); // Ensure timer is stopped
-        matchEnded = true; // Match is definitively over by time
+        pauseTimer(); // Garante que o timer esteja parado
+        matchEnded = true; // A partida terminou por tempo
 
         let winner = null;
         if (pontos.aka > pontos.ao) {
             winner = "aka";
         } else if (pontos.ao > pontos.aka) {
             winner = "ao";
-        } else { // Scores are tied
+        } else { // Pontuações empatadas
             if (activeSenshu === 'aka') {
                 winner = "aka";
             } else if (activeSenshu === 'ao') {
                 winner = "ao";
-            } else { // Scores tied, no Senshu or Senshu cancelled
+            } else { // Empate, sem Senshu
                 const akaPenalties = getPenaltyCount('aka');
                 const aoPenalties = getPenaltyCount('ao');
 
@@ -191,20 +245,20 @@ function verificarVencedor() {
                 } else if (aoPenalties < akaPenalties) {
                     winner = "ao";
                 } else {
-                    // Still tied: Hantei (Decision by judges)
-                    // In a real scenario, this would prompt judges for decision.
-                    // Here, we just won't declare a winner by blinking.
-                    console.log("Match tied, Hantei decision needed.");
+                    // Empate total: Hantei (Decisão dos árbitros)
+                    // Em um cenário real, isso exigiria a decisão dos árbitros.
+                    // Aqui, simplesmente não declaramos um vencedor piscando.
+                    console.log("Partida empatada, decisão por Hantei necessária.");
                 }
             }
         }
         if (winner) {
-            document.getElementById(winner).classList.add("blink");
+            document.getElementById(winner).classList.add("blink"); // Indica o vencedor
         }
-        return; // Exit after time expiry checks
+        return; // Sai da função após as verificações de fim de tempo
     }
 
-    // If match is still ongoing, ensure no one is blinking for a win
+    // Se a partida ainda está em andamento, garante que ninguém esteja piscando
     if (!matchEnded) {
         document.getElementById("aka").classList.remove("blink");
         document.getElementById("ao").classList.remove("blink");
@@ -212,7 +266,7 @@ function verificarVencedor() {
 }
 
 /**
- * Sets the match duration.
+ * Define a duração da partida.
  */
 function definirTempo() {
     if (timerInterval) { // Prevent changing time while timer is running
@@ -235,7 +289,7 @@ function definirTempo() {
 }
 
 /**
- * Updates the timer display and applies warning/final styles.
+ * Atualiza o display do timer e aplica estilos de aviso/final.
  */
 function updateDisplay() {
     let min = Math.floor(timeLeft / 60);
@@ -243,6 +297,7 @@ function updateDisplay() {
     const timerElement = document.getElementById("timer");
     timerElement.innerText = `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 
+    // Adiciona classes CSS para indicar tempo acabando ou zerado
     timerElement.classList.remove('warning', 'final');
     if (timeLeft <= 15 && timeLeft > 0) {
         timerElement.classList.add('warning');
@@ -252,10 +307,10 @@ function updateDisplay() {
 }
 
 /**
- * Starts the match timer.
+ * Inicia o cronômetro da partida.
  */
 function startTimer() {
-    if (timerInterval || matchEnded) return; // Prevent starting if already running or match ended
+    if (timerInterval || matchEnded) return; // Impede o início se já estiver rodando ou se a partida terminou
 
     timerInterval = setInterval(() => {
         if (timeLeft > 0) {
@@ -264,13 +319,13 @@ function startTimer() {
         } else {
             clearInterval(timerInterval);
             timerInterval = null;
-            verificarVencedor(); // Check winner when time runs out
+            verificarVencedor(); // Verifica o vencedor quando o tempo acaba
         }
     }, 1000);
 }
 
 /**
- * Pauses the match timer.
+ * Pausa o cronômetro da partida.
  */
 function pauseTimer() {
     clearInterval(timerInterval);
@@ -278,36 +333,36 @@ function pauseTimer() {
 }
 
 /**
- * Resets all scores, penalties, timer, and Senshu.
+ * Reseta todos os placares, penalidades, timer e Senshu.
  */
 function resetAll() {
     pauseTimer();
     pontos.aka = 0;
     pontos.ao = 0;
-    document.getElementById("pontosAka").innerText = "0";
-    document.getElementById("pontosAo").innerText = "0";
+    document.getElementById("pontosAka").innerText = "0"; // Reseta placar AKA
+    document.getElementById("pontosAo").innerText = "0"; // Reseta placar AO
 
-    // Reset all penalty buttons
+    // Reseta todos os botões de penalidade
     document.querySelectorAll(".pen-btn").forEach(btn => btn.classList.remove("active"));
     
-    // Remove blinking from athlete sections
+    // Remove o efeito de piscar das seções dos atletas
     document.getElementById("aka").classList.remove("blink");
     document.getElementById("ao").classList.remove("blink");
 
-    // Reset Senshu
+    // Reseta o Senshu
     document.getElementById("akaSenshu").classList.remove("active");
     document.getElementById("aoSenshu").classList.remove("active");
     activeSenshu = null; 
     
-    timeLeft = duration; // Reset timer to initial duration
-    matchEnded = false; // Reset match ended flag
-    updateDisplay(); // Update timer display
+    timeLeft = duration; // Reseta o tempo para a duração inicial
+    matchEnded = false; // Reseta a flag de fim de partida
+    updateDisplay(); // Atualiza o display do timer
 }
 
 /**
- * Toggles full-screen mode for the document.
+ * Alterna o modo de tela cheia para o documento.
  */
-function alternarTelaCheia() {
+function alternarTelaCheia() { // Renomeado de toggleFullScreen para consistência
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(err => {
             alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
