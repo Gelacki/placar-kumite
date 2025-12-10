@@ -204,13 +204,22 @@ body {
 }
 
 /* Efeito de piscar para o vencedor */
-.blink {
-    animation: blink-animation 0.76s infinite;
+.ao.blink {
+    animation: blink-animation-ao 0.76s infinite;
 }
 
-@keyframes blink-animation {
-    50% { background-color: #ffffff; }
+.aka.blink {
+    animation: blink-animation-aka 0.76s infinite;
 }
+
+@keyframes blink-animation-ao {
+    50% { background-color: #8899ff; } /* Pisca para um azul claro */
+}
+
+@keyframes blink-animation-aka {
+    50% { background-color: #ff8888; } /* Pisca para um vermelho claro */
+}
+
 
 /* Animação para o cronômetro piscando */
 @keyframes blink-warning-animation {
