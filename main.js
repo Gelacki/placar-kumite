@@ -6,12 +6,12 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: path.join(__dirname, 'assets/icon.png'), // Ícone para Windows e Linux
     webPreferences: {
-      // __dirname aponta para a raiz do projeto
-      // preload: path.join(__dirname, 'preload.js') // Descomente se precisar de scripts de pré-carregamento
-    },
-    // Ícone da janela (opcional, mas recomendado)
-    // icon: path.join(__dirname, 'caminho/para/seu/icone.ico') 
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true, // Altamente recomendado para segurança
+      nodeIntegration: false // Altamente recomendado para segurança
+    }
   });
 
   // e carrega o index.html do seu aplicativo.
@@ -24,6 +24,14 @@ function createWindow() {
 // Este método será chamado quando o Electron terminar
 // a inicialização e estiver pronto para criar janelas do navegador.
 app.whenReady().then(createWindow);
+
+app.on('activate', () => {
+  // No macOS, é comum recriar uma janela no aplicativo quando o
+  // ícone do dock é clicado e não há outras janelas abertas.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
 
 // Encerra o aplicativo quando todas as janelas são fechadas (exceto no macOS).
 app.on('window-all-closed', () => {

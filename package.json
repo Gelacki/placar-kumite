@@ -1,0 +1,39 @@
+{
+  "name": "placar-kumite",
+  "version": "1.0.0",
+  "description": "Um placar eletrônico para competições de kumitê de karatê.",
+  "main": "main.js",
+  "author": "Seu Nome ou Empresa",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^31.0.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.seu-dominio.placarkumite",
+    "productName": "Placar Kumite WKF",
+    "copyright": "Copyright © 2025 ${author}",
+    "files": [
+      "main.js",
+      "index.html",
+      "styles.css",
+      "script.js",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  }
+}
